@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Stories | NAN FLOW",
-  description: "Browse the living archives, stories, traditions, and landscapes of Nan province.",
+  title: "Impact Journey | NAN FLOW",
+  description: "Turn traveler intent and community needs into measurable provincial impact.",
 };
 
 export default function ExplorerLayout({ children }: { children: React.ReactNode }) {

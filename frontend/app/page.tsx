@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, BookOpen, CalendarDays, CircleGauge, Leaf, Route, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, CircleGauge, Leaf, Route, Sparkles, Target } from "lucide-react";
 import { api } from "./utils/api";
 import type { GraphEntity } from "./types";
 import { LanguageSwitch, useLocale } from "./components/LocaleProvider";
@@ -16,7 +16,7 @@ export default function Home() {
   return <main className="page-shell overflow-hidden">
     <nav className="glass sticky top-0 z-40 mx-auto flex min-h-[74px] items-center gap-4 px-4 sm:px-7">
       <Link href="/" className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-full font-semibold" style={{ background: "var(--forest)", color: "var(--canvas)" }}>น</span><strong className="text-sm tracking-[.16em]">NAN FLOW</strong></Link>
-      <div className="ml-auto hidden items-center gap-7 md:flex">{[["/stories","Stories"],["/journey","Journey"],["/community","Community"],["/impact","Impact"]].map(([href,label]) => <Link className="text-xs font-bold" style={{ color: "var(--muted)" }} href={href} key={href}>{label}</Link>)}</div>
+      <div className="ml-auto hidden items-center gap-7 md:flex">{[["/stories","Stories"],["/journey","Impact Journey"],["/community","Community"],["/dashboard","Province"]].map(([href,label]) => <Link className="text-xs font-bold" style={{ color: "var(--muted)" }} href={href} key={href}>{label}</Link>)}</div>
       <div className="ml-auto flex items-center gap-2 md:ml-4"><LanguageSwitch /><Link href="/journey" className="primary-button hidden sm:inline-flex">เริ่ม Journey <ArrowRight size={15} /></Link></div>
     </nav>
 
@@ -46,6 +46,6 @@ export default function Home() {
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{stories.slice(0,3).map((story,index) => <Reveal delay={index*.06} key={story.id}><Link href="/stories" className="group block min-h-[300px] rounded-[28px] border p-6 transition hover:-translate-y-1" style={{ background: index===0 ? "var(--forest)" : "var(--surface)", color: index===0 ? "var(--canvas)" : "var(--text)", borderColor: "var(--line)" }}><span className="eyebrow opacity-70">{story.labels[0] || "Knowledge"}</span><h3 className="mt-16 text-2xl font-medium" style={{ fontFamily: "Georgia, serif" }}>{entityName(story)}</h3><p className="mt-4 line-clamp-3 text-sm leading-6 opacity-65">{story.description || "เรื่องราวที่เชื่อมโยงผู้คน ชุมชน และภูมิทัศน์ของน่าน"}</p><span className="mt-7 inline-flex items-center gap-2 text-xs font-bold">สำรวจความสัมพันธ์ <ArrowRight className="transition group-hover:translate-x-1" size={14} /></span></Link></Reveal>)}</div>
     </section>
 
-    <section className="border-y" style={{ borderColor: "var(--line)", background: "var(--surface)" }}><div className="mx-auto grid max-w-[1500px] gap-4 px-5 py-16 md:grid-cols-3 lg:px-12">{[{icon:Route,title:"Journey",text:"เปลี่ยนความตั้งใจเป็นประสบการณ์ที่เหมาะสม",href:"/journey"},{icon:Users,title:"Community",text:"ให้ชุมชนควบคุมเรื่องราวและความพร้อม",href:"/community"},{icon:Leaf,title:"Impact",text:"มองเห็นว่าใครได้รับคุณค่าและใครรับต้นทุน",href:"/impact"}].map(({icon:Icon,title,text,href}) => <Link href={href} className="soft-card group" key={title}><Icon size={21} style={{ color: "var(--mint)" }} /><h3 className="mt-7 text-xl font-bold">{title}</h3><p className="body-copy mt-3 text-sm">{text}</p><ArrowRight className="mt-6 transition group-hover:translate-x-1" size={16} /></Link>)}</div></section>
+    <section className="border-y" style={{ borderColor: "var(--line)", background: "var(--surface)" }}><div className="mx-auto max-w-[1500px] px-5 py-16 lg:px-12"><p className="eyebrow">One system · Three connected views</p><h2 className="section-title mt-3">ระบบเดียวสำหรับนักท่องเที่ยว ชุมชน และจังหวัด</h2><div className="mt-8 grid gap-4 md:grid-cols-3">{[{icon:Route,title:"Tourist View",text:"ได้รับประสบการณ์ที่เหมาะกับตนเองและสร้างผลกระทบเชิงบวก",href:"/journey"},{icon:Target,title:"Community View",text:"กำหนด Community Need, Capacity, Consent และสิทธิ์ในการหยุด",href:"/community"},{icon:CircleGauge,title:"Province View",text:"ใช้ AI กระจายคน รายได้ และโอกาสตลอด 12 เดือน",href:"/dashboard"}].map(({icon:Icon,title,text,href}) => <Link href={href} className="soft-card group" key={title}><Icon size={21} style={{ color: "var(--mint)" }} /><h3 className="mt-7 text-xl font-bold">{title}</h3><p className="body-copy mt-3 text-sm">{text}</p><ArrowRight className="mt-6 transition group-hover:translate-x-1" size={16} /></Link>)}</div></div></section>
   </main>;
 }

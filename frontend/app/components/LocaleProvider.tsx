@@ -65,6 +65,8 @@ const th: Record<string, string> = {
   "Researcher": "นักวิจัย",
   "Stories": "เรื่องราว",
   "Journey": "การเดินทาง",
+  "Impact Journey": "การเดินทางสร้างผลกระทบ",
+  "Decision Dashboard": "แดชบอร์ดการตัดสินใจ",
   "Impact": "ผลกระทบ",
   "Settings": "การตั้งค่า",
   "Start a journey": "เริ่มออกแบบการเดินทาง",
