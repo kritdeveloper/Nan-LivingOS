@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Curator Dashboard | Nan Living OS",
-  description: "Overview of knowledge stewardship, impact, and moderation for Nan Living OS.",
+  title: "Dashboard | NAN FLOW",
+  description: "Prioritized tourism decisions, impact signals, and grounded evidence.",
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

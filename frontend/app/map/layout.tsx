@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Living Map | Nan Living OS",
+  title: "Journey | NAN FLOW",
   description: "Explore stories, cultural sites, and heritage across the map of Nan province.",
 };
 

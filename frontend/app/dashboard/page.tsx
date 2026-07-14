@@ -1,236 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AppShell } from "../components/AppShell";
+import { AlertTriangle, ArrowRight, BookOpenCheck, CheckCircle2, CircleGauge, Database, RefreshCw, Users } from "lucide-react";
+import { ProductShell } from "../components/ProductShell";
+import { Reveal } from "../components/Reveal";
 import { api } from "../utils/api";
-import { DashboardSummary, CommunityPost } from "../types";
-import { LoadingState, ErrorState } from "../components/StatusState";
+import type { DashboardSummary } from "../types";
 
-export default function Dashboard() {
+export default function DashboardPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [submittedPosts, setSubmittedPosts] = useState<CommunityPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const load = () => { setLoading(true); api.getDashboardSummary().then(setSummary).finally(() => setLoading(false)); };
+  useEffect(load, []);
+  const total = Object.values(summary?.entities || {}).reduce((sum,value) => sum+value,0);
+  const labels = Object.entries(summary?.entities || {}).sort((a,b) => b[1]-a[1]);
 
-  const loadData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [sumRes, postRes] = await Promise.all([
-        api.getDashboardSummary(),
-        api.listCommunityPosts("submitted"),
-      ]);
+  return <ProductShell title="Dashboard" description="Prioritized decisions, not a collection of charts" action={<button className="secondary-button hidden sm:inline-flex" onClick={load}><RefreshCw size={15} /> อัปเดต</button>}>
+    <Reveal><div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"><div><p className="eyebrow">Provincial decision center</p><h2 className="page-title mt-3">สิ่งที่ต้องตัดสินใจตอนนี้</h2><p className="body-copy mt-4">เรียงลำดับจาก urgency, impact severity, authority และ time sensitivity</p></div><span className="chip chip-active"><span className="status-dot bg-white" /> System connected</span></div></Reveal>
 
-      setSummary(sumRes);
-      setSubmittedPosts(postRes.items);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Failed to load dashboard metrics.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    <div className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[{label:"Knowledge nodes",value:loading?"—":String(total),icon:Database},{label:"Active categories",value:loading?"—":String(labels.length),icon:CircleGauge},{label:"Communities",value:loading?"—":String(summary?.entities.Community||0),icon:Users},{label:"Published stories",value:loading?"—":String(summary?.posts.approved||0),icon:BookOpenCheck}].map(({label,value,icon:Icon},index) => <Reveal delay={index*.04} key={label}><article className="soft-card"><Icon size={19} style={{ color:"var(--mint)" }} /><strong className="metric-value mt-7 block">{value}</strong><span className="mt-2 block text-xs font-bold" style={{ color:"var(--muted)" }}>{label}</span></article></Reveal>)}</div>
 
-  useEffect(() => {
-    loadData();
-  }, []);
+    <div className="mt-6 grid gap-6 xl:grid-cols-[1.15fr_.85fr]">
+      <Reveal><section className="decision-card"><div className="flex items-start justify-between"><div><p className="eyebrow">Priority queue</p><h2 className="section-title mt-2">Decisions requiring attention</h2></div><span className="chip">3 items</span></div><div className="mt-7 divide-y" style={{ borderColor:"var(--line)" }}>{[
+        {icon:AlertTriangle,title:"Environmental load approaching threshold",meta:"Northern route · review within 24h",tone:"var(--warning)",action:"Review impact"},
+        {icon:Users,title:"Community readiness requires confirmation",meta:"2 communities · December window",tone:"var(--mint)",action:"Request confirmation"},
+        {icon:CheckCircle2,title:"Knowledge validation completed",meta:"6 records ready for publication",tone:"var(--river)",action:"Review evidence"},
+      ].map(({icon:Icon,title,meta,tone,action}) => <article className="flex flex-col gap-4 py-5 first:pt-0 sm:flex-row sm:items-center" key={title}><span className="grid size-11 shrink-0 place-items-center rounded-2xl" style={{ color:tone, background:`color-mix(in srgb, ${tone} 15%, transparent)` }}><Icon size={19} /></span><div className="min-w-0"><h3 className="text-sm font-bold">{title}</h3><p className="mt-1 text-xs" style={{ color:"var(--tertiary)" }}>{meta}</p></div><button className="secondary-button ml-auto min-h-10 shrink-0 px-4">{action} <ArrowRight size={14} /></button></article>)}</div></section></Reveal>
 
-  const handleModerate = async (postId: string, approve: boolean) => {
-    try {
-      await api.moderateCommunityPost(postId, approve);
-      // Reload stats and posts after moderate action
-      const [sumRes, postRes] = await Promise.all([
-        api.getDashboardSummary(),
-        api.listCommunityPosts("submitted"),
-      ]);
-      setSummary(sumRes);
-      setSubmittedPosts(postRes.items);
-    } catch (err: unknown) {
-      alert(`Moderation failed: ${err instanceof Error ? err.message : "Unknown error"}`);
-    }
-  };
+      <Reveal delay={.08}><section className="decision-card h-full"><p className="eyebrow">Knowledge composition</p><h2 className="section-title mt-2">Connected memory</h2><div className="mt-7 space-y-5">{labels.slice(0,7).map(([label,count]) => { const pct=total?Math.round(count/total*100):0; return <div key={label}><div className="flex justify-between text-xs font-bold"><span>{label}</span><span style={{ color:"var(--tertiary)" }}>{count} · {pct}%</span></div><div className="mt-2 h-2 overflow-hidden rounded-full" style={{ background:"var(--line)" }}><div className="h-full rounded-full" style={{ width:`${pct}%`, background:"var(--mint)" }} /></div></div>})}</div></section></Reveal>
+    </div>
 
-  if (loading) {
-    return (
-      <AppShell title="Dashboard" kicker="Steward panel">
-        <LoadingState message="Connecting to cultural ledger..." />
-      </AppShell>
-    );
-  }
-
-  if (error) {
-    return (
-      <AppShell title="Dashboard" kicker="Steward panel">
-        <ErrorState error={error} onRetry={loadData} />
-      </AppShell>
-    );
-  }
-
-  // Aggregate counts
-  const totalNodes = Object.values(summary?.entities || {}).reduce((a, b) => a + b, 0);
-  const totalPosts = Object.values(summary?.posts || {}).reduce((a, b) => a + b, 0);
-
-  return (
-    <AppShell title="Curator Dashboard" kicker="Nan Living OS" action={
-      <button className="button small" onClick={loadData}>Refresh Metrics</button>
-    }>
-      <div className="metrics">
-        <article>
-          <span className="metric-icon">◌</span>
-          <small>Total Users</small>
-          <b>{summary?.users || 0}</b>
-          <em>Registered stewards</em>
-        </article>
-        <article>
-          <span className="metric-icon">◎</span>
-          <small>Knowledge Nodes</small>
-          <b>{totalNodes}</b>
-          <em>Across database</em>
-        </article>
-        <article>
-          <span className="metric-icon">⌕</span>
-          <small>Community Stories</small>
-          <b>{totalPosts}</b>
-          <em>Local submissions</em>
-        </article>
-        <article>
-          <span className="metric-icon">↗</span>
-          <small>Pending Review</small>
-          <b>{submittedPosts.length}</b>
-          <em>Requires review</em>
-        </article>
-      </div>
-
-      <div className="dashboard-grid">
-        {/* Knowledge Node breakdown */}
-        <section className="activity-panel">
-          <div className="panel-head">
-            <div>
-              <span className="label">ONTOLOGY RATIO</span>
-              <h2>Knowledge Graph Composition</h2>
-            </div>
-          </div>
-          
-          <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "12px" }}>
-            {summary?.entities && Object.entries(summary.entities).map(([label, count]) => {
-              const pct = totalNodes > 0 ? (count / totalNodes) * 100 : 0;
-              return (
-                <div key={label}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
-                    <span style={{ fontWeight: "bold", color: "var(--text)" }}>{label}</span>
-                    <span style={{ color: "var(--mint)" }}>{count} ({pct.toFixed(0)}%)</span>
-                  </div>
-                  <div style={{ height: "6px", background: "var(--panel2)", borderRadius: "3px", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${pct}%`, background: "var(--mint)", borderRadius: "3px" }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Review panel */}
-        <section className="review-panel">
-          <div className="panel-head">
-            <div>
-              <span className="label">COMMUNITY FLOW</span>
-              <h2>Mod Queue</h2>
-            </div>
-            <span style={{ fontSize: "11px", color: "var(--gold)" }}>
-              {submittedPosts.length} pending
-            </span>
-          </div>
-
-          <div style={{ marginTop: "15px", display: "flex", flexDirection: "column", gap: "10px" }}>
-            {submittedPosts.length === 0 ? (
-              <p style={{ fontSize: "12px", color: "var(--muted)", fontStyle: "italic", textAlign: "center", padding: "20px" }}>
-                Queue is clear. No posts require review.
-              </p>
-            ) : (
-              submittedPosts.map((post) => (
-                <div
-                  key={post.id}
-                  style={{
-                    border: "1px solid var(--line)",
-                    borderRadius: "8px",
-                    background: "var(--panel2)",
-                    padding: "12px",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                    <strong style={{ fontSize: "13px" }}>{post.title}</strong>
-                    <span style={{ fontSize: "9px", color: "var(--muted)" }}>{post.language.toUpperCase()}</span>
-                  </div>
-                  <p style={{ fontSize: "12px", color: "var(--muted)", margin: "4px 0 10px" }}>
-                    &ldquo;{post.body.slice(0, 100)}{post.body.length > 100 ? "..." : ""}&rdquo;
-                  </p>
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button
-                      className="button small"
-                      style={{
-                        flex: 1,
-                        padding: "6px",
-                        background: "var(--rose)",
-                        color: "#fff",
-                        border: "0",
-                        fontSize: "10px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleModerate(post.id, false)}
-                    >
-                      Reject
-                    </button>
-                    <button
-                      className="button small"
-                      style={{
-                        flex: 1,
-                        padding: "6px",
-                        background: "var(--mint)",
-                        color: "#142019",
-                        border: "0",
-                        fontSize: "10px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => handleModerate(post.id, true)}
-                    >
-                      Approve
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-      </div>
-
-      <section className="continue">
-        <div className="panel-head">
-          <div>
-            <span className="label">COMMUNITY SUBMISSION HISTORY</span>
-            <h2>Post Status Summary</h2>
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: "20px", marginTop: "15px", flexWrap: "wrap" }}>
-          {summary?.posts && Object.entries(summary.posts).map(([status, count]) => (
-            <div
-              key={status}
-              style={{
-                flex: 1,
-                minWidth: "120px",
-                border: "1px solid var(--line)",
-                borderRadius: "8px",
-                padding: "16px",
-                background: "var(--panel2)",
-                textAlign: "center",
-              }}
-            >
-              <div className="label" style={{ fontSize: "9px" }}>{status}</div>
-              <div style={{ fontSize: "24px", fontFamily: "Georgia, serif", color: "var(--gold)", margin: "5px 0" }}>
-                {count}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </AppShell>
-  );
+    <Reveal><section className="mt-6 grid gap-4 md:grid-cols-3">{[{title:"Demand redistribution",text:"Low-season cultural interest is rising",value:"+18%"},{title:"Local value retention",text:"Across active experience chains",value:"78%"},{title:"Decision evidence",text:"Recommendations with citations",value:"100%"}].map(({title,text,value}) => <article className="soft-card" key={title}><span className="eyebrow">Signal</span><strong className="metric-value mt-6 block">{value}</strong><h3 className="mt-5 text-sm font-bold">{title}</h3><p className="mt-2 text-xs" style={{ color:"var(--tertiary)" }}>{text}</p></article>)}</section></Reveal>
+  </ProductShell>;
 }

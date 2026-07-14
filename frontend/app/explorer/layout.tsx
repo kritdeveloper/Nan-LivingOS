@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Explore | Nan Living OS",
+  title: "Stories | NAN FLOW",
   description: "Browse the living archives, stories, traditions, and landscapes of Nan province.",
 };
 

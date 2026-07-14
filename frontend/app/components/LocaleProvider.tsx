@@ -63,6 +63,12 @@ const th: Record<string, string> = {
   "Share a story, image, or piece of local knowledge.": "แบ่งปันเรื่องราว ภาพถ่าย หรือภูมิปัญญาท้องถิ่น",
   "Contribute →": "ร่วมแบ่งปัน →",
   "Researcher": "นักวิจัย",
+  "Stories": "เรื่องราว",
+  "Journey": "การเดินทาง",
+  "Impact": "ผลกระทบ",
+  "Settings": "การตั้งค่า",
+  "Start a journey": "เริ่มออกแบบการเดินทาง",
+  "Home": "หน้าหลัก",
   "Add knowledge": "เพิ่มองค์ความรู้",
   "No description available in the archives.": "ยังไม่มีคำอธิบายในคลังความรู้",
 };

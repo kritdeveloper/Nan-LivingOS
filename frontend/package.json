@@ -13,9 +13,14 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
+    "@tailwindcss/postcss": "^4.3.2",
+    "lucide-react": "^1.24.0",
+    "mapbox-gl": "^3.26.0",
+    "motion": "^12.42.2",
     "next": "16.2.6",
     "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react-dom": "19.2.6",
+    "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@types/node": "22.19.19",

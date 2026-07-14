@@ -1,109 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { LanguageSwitch, localizedPlaceholder, useLocale } from "./components/LocaleProvider";
-
-const places = [
-  { name: "Wat Phumin", type: "Sacred architecture", x: 67, y: 28, tone: "gold" },
-  { name: "Doi Phu Kha", type: "Living landscape", x: 24, y: 57, tone: "mint" },
-  { name: "Bo Kluea", type: "Salt heritage", x: 72, y: 70, tone: "blue" },
-];
-
-function Icon({ children }: { children: React.ReactNode }) {
-  return <span className="icon" aria-hidden>{children}</span>;
-}
+import { useEffect, useState } from "react";
+import { ArrowRight, BookOpen, CalendarDays, CircleGauge, Leaf, Route, Sparkles, Users } from "lucide-react";
+import { api } from "./utils/api";
+import type { GraphEntity } from "./types";
+import { LanguageSwitch, useLocale } from "./components/LocaleProvider";
+import { Reveal } from "./components/Reveal";
 
 export default function Home() {
-  const { locale, t } = useLocale();
-  const [query, setQuery] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [theme, setTheme] = useState(() =>
-    typeof window === "undefined" ? "dark" : localStorage.getItem("theme") || "dark"
-  );
+  const { entityName } = useLocale();
+  const [stories, setStories] = useState<GraphEntity[]>([]);
+  useEffect(() => { api.searchEntities({ limit: 6 }).then((result) => setStories(result.items)).catch(() => setStories([])); }, []);
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dark";
-    const html = document.documentElement;
-    if (savedTheme === "light") {
-      html.classList.remove("dark");
-      html.classList.add("light");
-    } else {
-      html.classList.remove("light");
-      html.classList.add("dark");
-    }
-  }, []);
+  return <main className="page-shell overflow-hidden">
+    <nav className="glass sticky top-0 z-40 mx-auto flex min-h-[74px] items-center gap-4 px-4 sm:px-7">
+      <Link href="/" className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-full font-semibold" style={{ background: "var(--forest)", color: "var(--canvas)" }}>น</span><strong className="text-sm tracking-[.16em]">NAN FLOW</strong></Link>
+      <div className="ml-auto hidden items-center gap-7 md:flex">{[["/stories","Stories"],["/journey","Journey"],["/community","Community"],["/impact","Impact"]].map(([href,label]) => <Link className="text-xs font-bold" style={{ color: "var(--muted)" }} href={href} key={href}>{label}</Link>)}</div>
+      <div className="ml-auto flex items-center gap-2 md:ml-4"><LanguageSwitch /><Link href="/journey" className="primary-button hidden sm:inline-flex">เริ่ม Journey <ArrowRight size={15} /></Link></div>
+    </nav>
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    const html = document.documentElement;
-    if (nextTheme === "light") {
-      html.classList.remove("dark");
-      html.classList.add("light");
-    } else {
-      html.classList.remove("light");
-      html.classList.add("dark");
-    }
-  };
+    <section className="relative mx-auto grid min-h-[720px] max-w-[1500px] items-center gap-12 px-5 py-20 lg:grid-cols-[1.05fr_.95fr] lg:px-12">
+      <div className="absolute left-[8%] top-[12%] -z-0 size-[420px] rounded-full opacity-25 blur-3xl" style={{ background: "var(--mint)" }} />
+      <Reveal className="relative z-10">
+        <p className="eyebrow flex items-center gap-2"><Sparkles size={14} /> AI Decision Intelligence for Sustainable Tourism</p>
+        <h1 className="display-title mt-7">เพิ่มคุณค่า<br /><span style={{ color: "var(--mint)" }}>ไม่เพิ่มปริมาณ</span></h1>
+        <p className="body-copy mt-7 max-w-xl text-lg">เปลี่ยนองค์ความรู้ ความพร้อมของชุมชน และสัญญาณการท่องเที่ยว ให้เป็นการตัดสินใจที่กระจายโอกาสตลอด 12 เดือน</p>
+        <div className="mt-9 flex flex-wrap gap-3"><Link href="/journey" className="primary-button">ออกแบบการเดินทาง <ArrowRight size={16} /></Link><Link href="/stories" className="secondary-button"><BookOpen size={17} /> เริ่มจากเรื่องราว</Link></div>
+        <div className="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-xs font-bold" style={{ color: "var(--tertiary)" }}><span>Stories before places</span><span>Communities before attractions</span><span>Impact before features</span></div>
+      </Reveal>
 
-  return (
-    <main className="landing">
-      <nav className="topbar">
-        <Link href="/" className="brand"><span className="brandmark">น</span><span>NAN</span><em>Living OS</em></Link>
-        <div className="navlinks">
-          <Link href="/explorer">{t("Explore")}</Link><Link href="/knowledge-graph">{t("Knowledge")}</Link><Link href="/community">{t("Community")}</Link>
-        </div>
-        <div className="nav-actions">
-          <LanguageSwitch />
-          <button
-            className="round"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
-            style={{ display: "grid", placeItems: "center", fontSize: "16px", cursor: "pointer" }}
-          >
-            {theme === "dark" ? "☼" : "☾"}
-          </button>
-          <Link className="button small" href="/ai-chat">{t("Ask Nan OS")} <span>↗</span></Link>
-        </div>
-      </nav>
-
-      <section className="hero">
-        <div className="eyebrow"><span>✦</span> {t("A living cultural intelligence")}</div>
-        <h1>{t("Every place")}<br/>{t("holds a")} <i>{t("memory.")}</i></h1>
-        <p>{t("Discover the stories, people, and landscapes that make Nan more than a destination.")}</p>
-        <div className="searchbox">
-          <Icon>⌕</Icon><input value={query} onChange={e => setQuery(e.target.value)} placeholder={localizedPlaceholder("Search places, stories, traditions...", locale)}/>
-          <Link href={`/explorer?q=${encodeURIComponent(query)}`} className="searchgo" aria-label="Search">→</Link>
-        </div>
-        <div className="quick"><span>Try</span><Link href="/explorer">Temple murals</Link><Link href="/explorer">Tai Lue textiles</Link><Link href="/map">Mountain trails</Link></div>
-      </section>
-
-      <section className="story-grid">
-        <article className="feature-card">
-          <div className="feature-art"><div className="sun"/><div className="mountain one"/><div className="mountain two"/><span className="vertical">เมืองน่าน · ความทรงจำที่มีชีวิต</span></div>
-          <div className="feature-copy"><span className="label">Featured story · 8 min</span><h2>The quiet language of temple walls</h2><p>Inside Wat Phumin, painted stories reveal how the people of Nan once saw love, trade, and the wider world.</p><div className="author"><span className="avatar">KS</span><div><b>Dr. Kanda Saeng</b><small>Cultural historian</small></div><button onClick={() => setSaved(!saved)} aria-label="Save story">{saved ? "♥" : "♡"}</button></div></div>
-        </article>
-        <aside className="map-card">
-          <div className="card-head"><div><span className="label">Explore nearby</span><h3>Stories on the map</h3></div><Link href="/map">Open map ↗</Link></div>
-          <div className="mini-map">
-            <span className="road r1"/><span className="road r2"/><span className="river"/>
-            {places.map((p,i)=><Link href="/map" key={p.name} className={`pin ${p.tone}`} style={{left:`${p.x}%`,top:`${p.y}%`}}><b>{i+1}</b><span>{p.name}</span></Link>)}
+      <Reveal delay={.12} className="relative z-10">
+        <div className="glass rounded-[32px] p-5 sm:p-7">
+          <div className="flex items-start justify-between"><div><p className="eyebrow">Provincial flow</p><h2 className="section-title mt-2">น่านในเดือนนี้</h2></div><span className="chip chip-active"><span className="status-dot bg-white" /> Live</span></div>
+          <div className="mt-7 grid grid-cols-2 gap-3">
+            {[{label:"องค์ความรู้",value:"38",icon:BookOpen},{label:"จุด GPS จริง",value:"13",icon:Route},{label:"ความพร้อม",value:"12 เดือน",icon:CalendarDays},{label:"หลักฐานอ้างอิง",value:"66",icon:CircleGauge}].map(({label,value,icon:Icon}) => <div className="soft-card" key={label}><Icon size={18} style={{ color: "var(--mint)" }} /><strong className="metric-value mt-5 block">{value}</strong><span className="mt-1 block text-xs" style={{ color: "var(--tertiary)" }}>{label}</span></div>)}
           </div>
-          <div className="place-list">{places.map((p,i)=><Link href="/explorer" key={p.name}><span className={`dot ${p.tone}`}>{i+1}</span><div><b>{p.name}</b><small>{p.type}</small></div><em>›</em></Link>)}</div>
-        </aside>
-      </section>
-
-      <section className="portal-strip">
-        <div><span className="label">{t("More ways to explore")}</span><h2>{t("Follow your curiosity.")}</h2></div>
-        <div className="portal-links">
-          <Link href="/knowledge-graph"><Icon>◎</Icon><span><b>Knowledge graph</b><small>See how everything connects</small></span><em>↗</em></Link>
-          <Link href="/ai-chat"><Icon>✦</Icon><span><b>Ask Nan OS</b><small>Explore connected community knowledge</small></span><em>↗</em></Link>
-          <Link href="/community"><Icon>◌</Icon><span><b>Community archive</b><small>Stories shared by local people</small></span><em>↗</em></Link>
+          <div className="mt-4 rounded-3xl p-5" style={{ background: "var(--forest)", color: "var(--canvas)" }}><div className="flex items-center gap-3"><Leaf size={20} /><div><p className="text-sm font-bold">Value before volume</p><p className="mt-1 text-xs opacity-70">ให้ AI ช่วยกระจายคุณค่า ไม่ใช่เร่งจำนวนคน</p></div></div></div>
         </div>
-      </section>
-      <footer><div className="brand"><span className="brandmark">น</span><span>NAN</span><em>Living OS</em></div><p>{t("Connecting knowledge, communities, and impact.")}</p><Link href="/dashboard">{t("Contributor dashboard →")}</Link></footer>
-    </main>
-  );
+      </Reveal>
+    </section>
+
+    <section className="mx-auto max-w-[1500px] px-5 pb-24 lg:px-12">
+      <div className="flex items-end justify-between gap-5"><div><p className="eyebrow">Living knowledge</p><h2 className="page-title mt-3">เรื่องราวนำทางการเดินทาง</h2></div><Link href="/stories" className="secondary-button hidden sm:inline-flex">ดูทั้งหมด <ArrowRight size={15} /></Link></div>
+      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{stories.slice(0,3).map((story,index) => <Reveal delay={index*.06} key={story.id}><Link href="/stories" className="group block min-h-[300px] rounded-[28px] border p-6 transition hover:-translate-y-1" style={{ background: index===0 ? "var(--forest)" : "var(--surface)", color: index===0 ? "var(--canvas)" : "var(--text)", borderColor: "var(--line)" }}><span className="eyebrow opacity-70">{story.labels[0] || "Knowledge"}</span><h3 className="mt-16 text-2xl font-medium" style={{ fontFamily: "Georgia, serif" }}>{entityName(story)}</h3><p className="mt-4 line-clamp-3 text-sm leading-6 opacity-65">{story.description || "เรื่องราวที่เชื่อมโยงผู้คน ชุมชน และภูมิทัศน์ของน่าน"}</p><span className="mt-7 inline-flex items-center gap-2 text-xs font-bold">สำรวจความสัมพันธ์ <ArrowRight className="transition group-hover:translate-x-1" size={14} /></span></Link></Reveal>)}</div>
+    </section>
+
+    <section className="border-y" style={{ borderColor: "var(--line)", background: "var(--surface)" }}><div className="mx-auto grid max-w-[1500px] gap-4 px-5 py-16 md:grid-cols-3 lg:px-12">{[{icon:Route,title:"Journey",text:"เปลี่ยนความตั้งใจเป็นประสบการณ์ที่เหมาะสม",href:"/journey"},{icon:Users,title:"Community",text:"ให้ชุมชนควบคุมเรื่องราวและความพร้อม",href:"/community"},{icon:Leaf,title:"Impact",text:"มองเห็นว่าใครได้รับคุณค่าและใครรับต้นทุน",href:"/impact"}].map(({icon:Icon,title,text,href}) => <Link href={href} className="soft-card group" key={title}><Icon size={21} style={{ color: "var(--mint)" }} /><h3 className="mt-7 text-xl font-bold">{title}</h3><p className="body-copy mt-3 text-sm">{text}</p><ArrowRight className="mt-6 transition group-hover:translate-x-1" size={16} /></Link>)}</div></section>
+  </main>;
 }

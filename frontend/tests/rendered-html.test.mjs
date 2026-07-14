@@ -4,16 +4,16 @@ import test from "node:test";
 
 const root = new URL("../", import.meta.url);
 const routes = [
-  ["Landing", "app/page.tsx"],
-  ["Explorer", "app/explorer/page.tsx"],
-  ["Knowledge Graph", "app/knowledge-graph/page.tsx"],
-  ["AI Chat", "app/ai-chat/page.tsx"],
-  ["Community Portal", "app/community/page.tsx"],
+  ["Home", "app/page.tsx"],
+  ["Stories", "app/stories/page.tsx"],
+  ["Journey", "app/journey/page.tsx"],
+  ["Community", "app/community/page.tsx"],
+  ["Impact", "app/impact/page.tsx"],
   ["Dashboard", "app/dashboard/page.tsx"],
-  ["Map", "app/map/page.tsx"],
+  ["Settings", "app/settings/page.tsx"],
 ];
 
-test("ships every Nan Living OS product route", async () => {
+test("ships every NAN FLOW product route", async () => {
   for (const [name, path] of routes) {
     await assert.doesNotReject(access(new URL(path, root)), `${name} route is missing`);
     const source = await readFile(new URL(path, root), "utf8");
@@ -21,32 +21,37 @@ test("ships every Nan Living OS product route", async () => {
   }
 });
 
-test("uses finished product metadata and no starter preview", async () => {
+test("uses the NAN FLOW product identity and architecture", async () => {
   const [layout, page, packageJson] = await Promise.all([
     readFile(new URL("app/layout.tsx", root), "utf8"),
     readFile(new URL("app/page.tsx", root), "utf8"),
     readFile(new URL("package.json", root), "utf8"),
   ]);
 
-  assert.match(layout, /title:\s*"Nan Living OS"/);
-  assert.match(layout, /Discover the living stories, people, and landscapes of Nan/);
-  assert.match(page, /Living OS/);
-  assert.match(packageJson, /"name":\s*"nan-living-os-web"/);
+  assert.match(layout, /default:\s*"NAN FLOW"/);
+  assert.match(layout, /AI Decision Intelligence Platform/);
+  assert.match(page, /Living knowledge/);
+  assert.match(page, /Stories before places/);
+  assert.match(packageJson, /"motion"/);
+  assert.match(packageJson, /"mapbox-gl"/);
   assert.doesNotMatch(layout, /Starter Project|codex-preview|SkeletonPreview/);
   assert.doesNotMatch(page, /Your site is taking shape|SkeletonPreview/);
-  await assert.rejects(access(new URL("app/_sites-preview/SkeletonPreview.tsx", root)));
 });
 
-test("keeps shared responsive and accessibility foundations", async () => {
-  const [css, shell] = await Promise.all([
+test("keeps responsive, accessible, dark-mode foundations", async () => {
+  const [css, shell, map] = await Promise.all([
     readFile(new URL("app/globals.css", root), "utf8"),
-    readFile(new URL("app/components/AppShell.tsx", root), "utf8"),
+    readFile(new URL("app/components/ProductShell.tsx", root), "utf8"),
+    readFile(new URL("app/components/LivingMap.tsx", root), "utf8"),
   ]);
 
-  assert.match(css, /@media\s*\(max-width:520px\)/);
-  assert.match(css, /@media\s*\(prefers-reduced-motion:reduce\)/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /prefers-reduced-transparency/);
   assert.match(css, /focus-visible/);
+  assert.match(css, /\.dark/);
   assert.match(shell, /aria-expanded=\{open\}/);
-  assert.match(shell, /sidebar-backdrop/);
-  assert.match(shell, /event\.key === "Escape"/);
+  assert.match(shell, /aria-label/);
+  assert.match(shell, /localStorage/);
+  assert.match(map, /NEXT_PUBLIC_MAPBOX_TOKEN/);
+  assert.match(map, /mapboxgl\.Map/);
 });

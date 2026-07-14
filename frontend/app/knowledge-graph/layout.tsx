@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Knowledge Graph | Nan Living OS",
+  title: "Stories | NAN FLOW",
   description: "Explore connections between places, traditions, and historical entities in Nan.",
 };
 

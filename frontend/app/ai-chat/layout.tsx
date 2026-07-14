@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Ask Nan OS | Nan Living OS",
-  description: "Ground-truth AI Reasoning Engine for exploring Nan's local culture.",
+  title: "Journey | NAN FLOW",
+  description: "Grounded AI decision intelligence for responsible journeys in Nan.",
 };
 
 export default function ChatLayout({ children }: { children: React.ReactNode }) {
