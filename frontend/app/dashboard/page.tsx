@@ -16,12 +16,6 @@ export default function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      // Authenticate as administrator to query dashboard metrics
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        await api.login("admin@nan.local", "ChangeMe123!");
-      }
-      
       const [sumRes, postRes] = await Promise.all([
         api.getDashboardSummary(),
         api.listCommunityPosts("submitted"),

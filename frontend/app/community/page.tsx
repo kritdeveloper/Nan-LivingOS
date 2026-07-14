@@ -26,11 +26,6 @@ export default function Community() {
   // Initialize and check user authentication
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        // Auto-login in development to facilitate direct integration
-        await api.login("admin@nan.local", "ChangeMe123!");
-      }
       const user = await api.getMe();
       setCurrentUser(user);
     } catch (err) {
