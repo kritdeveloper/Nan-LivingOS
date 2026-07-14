@@ -11,7 +11,7 @@ const navigation = [
   { href: "/journey", label: "Impact Journey", icon: Route },
   { href: "/community", label: "Community", icon: Users },
   { href: "/impact", label: "Impact", icon: Leaf },
-  { href: "/dashboard", label: "Decision Dashboard", icon: CircleGauge },
+  { href: "/dashboard", label: "Nan Mission Control", icon: CircleGauge },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 

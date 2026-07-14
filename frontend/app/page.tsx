@@ -16,7 +16,7 @@ export default function Home() {
   return <main className="page-shell overflow-hidden">
     <nav className="glass sticky top-0 z-40 mx-auto flex min-h-[74px] items-center gap-4 px-4 sm:px-7">
       <Link href="/" className="flex items-center gap-3"><span className="grid size-10 place-items-center rounded-full font-semibold" style={{ background: "var(--forest)", color: "var(--canvas)" }}>น</span><strong className="text-sm tracking-[.16em]">NAN FLOW</strong></Link>
-      <div className="ml-auto hidden items-center gap-7 md:flex">{[["/stories","Stories"],["/journey","Impact Journey"],["/community","Community"],["/dashboard","Province"]].map(([href,label]) => <Link className="text-xs font-bold" style={{ color: "var(--muted)" }} href={href} key={href}>{label}</Link>)}</div>
+      <div className="ml-auto hidden items-center gap-7 md:flex">{[["/stories","Stories"],["/journey","Impact Journey"],["/community","Community"],["/dashboard","Mission Control"]].map(([href,label]) => <Link className="text-xs font-bold" style={{ color: "var(--muted)" }} href={href} key={href}>{label}</Link>)}</div>
       <div className="ml-auto flex items-center gap-2 md:ml-4"><LanguageSwitch /><Link href="/journey" className="primary-button hidden sm:inline-flex">เริ่ม Journey <ArrowRight size={15} /></Link></div>
     </nav>
 

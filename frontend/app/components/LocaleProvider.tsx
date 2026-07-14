@@ -67,6 +67,7 @@ const th: Record<string, string> = {
   "Journey": "การเดินทาง",
   "Impact Journey": "การเดินทางสร้างผลกระทบ",
   "Decision Dashboard": "แดชบอร์ดการตัดสินใจ",
+  "Nan Mission Control": "ศูนย์บัญชาการน่าน",
   "Impact": "ผลกระทบ",
   "Settings": "การตั้งค่า",
   "Start a journey": "เริ่มออกแบบการเดินทาง",
