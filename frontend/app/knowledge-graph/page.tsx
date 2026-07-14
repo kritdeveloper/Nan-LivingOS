@@ -5,6 +5,7 @@ import { AppShell } from "../components/AppShell";
 import { api } from "../utils/api";
 import { GraphEntity, GraphRelationship, KnowledgeSource } from "../types";
 import { LoadingState, EmptyState, ErrorState } from "../components/StatusState";
+import { useLocale } from "../components/LocaleProvider";
 
 // Standard string hash for stable node positioning
 function hashString(str: string): number {
@@ -16,6 +17,7 @@ function hashString(str: string): number {
 }
 
 export default function Graph() {
+  const { locale, entityName } = useLocale();
   const [nodes, setNodes] = useState<GraphEntity[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -194,7 +196,7 @@ export default function Graph() {
                   }}
                 >
                   <span style={{ fontSize: "10px", fontWeight: isChosen ? "bold" : "normal" }}>
-                    {n.nameEn || n.nameTh}
+                    {entityName(n)}
                   </span>
                 </button>
               );
@@ -224,9 +226,9 @@ export default function Graph() {
             {activeNode ? (
               <>
                 <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", margin: "10px 0 4px" }}>
-                  {activeNode.nameTh}
+                  {entityName(activeNode)}
                 </h2>
-                {activeNode.nameEn && (
+                {locale === "th" && activeNode.nameEn && (
                   <h4 style={{ color: "var(--mint)", fontSize: "11px", margin: "0 0 10px", letterSpacing: "0.05em" }}>
                     {activeNode.nameEn}
                   </h4>
@@ -283,7 +285,7 @@ export default function Graph() {
                             justifyContent: "space-between",
                           }}
                         >
-                          <span style={{ color: "var(--text)" }}>{item.entity.nameEn || item.entity.nameTh}</span>
+                          <span style={{ color: "var(--text)" }}>{entityName(item.entity)}</span>
                           <span style={{ color: "var(--gold)", fontSize: "9px" }}>{item.relationship.type}</span>
                         </div>
                       ))}

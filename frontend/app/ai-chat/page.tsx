@@ -5,6 +5,7 @@ import { AppShell } from "../components/AppShell";
 import { api } from "../utils/api";
 import { ReasoningResult, RecommendationKind } from "../types";
 import { LoadingState } from "../components/StatusState";
+import { useLocale } from "../components/LocaleProvider";
 
 interface ChatMessage {
   sender: "user" | "ai";
@@ -15,6 +16,7 @@ interface ChatMessage {
 }
 
 export default function Chat() {
+  const { locale } = useLocale();
   const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [selectedKind, setSelectedKind] = useState<RecommendationKind>("experience");
@@ -44,6 +46,7 @@ export default function Chat() {
       const res = await api.aiReason({
         kind: forceKind,
         question: prompt,
+        language: locale,
         limit: 5,
         themes: forceKind === "experience" ? ["culture"] : [],
         community_ids: forceKind === "community" ? ["community-bo-kluea"] : [],

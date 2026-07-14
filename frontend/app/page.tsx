@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { LanguageSwitch, localizedPlaceholder, useLocale } from "./components/LocaleProvider";
 
 const places = [
   { name: "Wat Phumin", type: "Sacred architecture", x: 67, y: 28, tone: "gold" },
@@ -14,6 +15,7 @@ function Icon({ children }: { children: React.ReactNode }) {
 }
 
 export default function Home() {
+  const { locale, t } = useLocale();
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState(false);
   const [theme, setTheme] = useState(() =>
@@ -51,9 +53,10 @@ export default function Home() {
       <nav className="topbar">
         <Link href="/" className="brand"><span className="brandmark">น</span><span>NAN</span><em>Living OS</em></Link>
         <div className="navlinks">
-          <Link href="/explorer">Explore</Link><Link href="/knowledge-graph">Knowledge</Link><Link href="/community">Community</Link>
+          <Link href="/explorer">{t("Explore")}</Link><Link href="/knowledge-graph">{t("Knowledge")}</Link><Link href="/community">{t("Community")}</Link>
         </div>
         <div className="nav-actions">
+          <LanguageSwitch />
           <button
             className="round"
             onClick={toggleTheme}
@@ -62,16 +65,16 @@ export default function Home() {
           >
             {theme === "dark" ? "☼" : "☾"}
           </button>
-          <Link className="button small" href="/ai-chat">Ask Nan OS <span>↗</span></Link>
+          <Link className="button small" href="/ai-chat">{t("Ask Nan OS")} <span>↗</span></Link>
         </div>
       </nav>
 
       <section className="hero">
-        <div className="eyebrow"><span>✦</span> A living cultural intelligence</div>
-        <h1>Every place<br/>holds a <i>memory.</i></h1>
-        <p>Discover the stories, people, and landscapes that make Nan more than a destination.</p>
+        <div className="eyebrow"><span>✦</span> {t("A living cultural intelligence")}</div>
+        <h1>{t("Every place")}<br/>{t("holds a")} <i>{t("memory.")}</i></h1>
+        <p>{t("Discover the stories, people, and landscapes that make Nan more than a destination.")}</p>
         <div className="searchbox">
-          <Icon>⌕</Icon><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search places, stories, traditions..."/>
+          <Icon>⌕</Icon><input value={query} onChange={e => setQuery(e.target.value)} placeholder={localizedPlaceholder("Search places, stories, traditions...", locale)}/>
           <Link href={`/explorer?q=${encodeURIComponent(query)}`} className="searchgo" aria-label="Search">→</Link>
         </div>
         <div className="quick"><span>Try</span><Link href="/explorer">Temple murals</Link><Link href="/explorer">Tai Lue textiles</Link><Link href="/map">Mountain trails</Link></div>
@@ -93,14 +96,14 @@ export default function Home() {
       </section>
 
       <section className="portal-strip">
-        <div><span className="label">More ways to explore</span><h2>Follow your curiosity.</h2></div>
+        <div><span className="label">{t("More ways to explore")}</span><h2>{t("Follow your curiosity.")}</h2></div>
         <div className="portal-links">
           <Link href="/knowledge-graph"><Icon>◎</Icon><span><b>Knowledge graph</b><small>See how everything connects</small></span><em>↗</em></Link>
           <Link href="/ai-chat"><Icon>✦</Icon><span><b>Ask Nan OS</b><small>Explore connected community knowledge</small></span><em>↗</em></Link>
           <Link href="/community"><Icon>◌</Icon><span><b>Community archive</b><small>Stories shared by local people</small></span><em>↗</em></Link>
         </div>
       </section>
-      <footer><div className="brand"><span className="brandmark">น</span><span>NAN</span><em>Living OS</em></div><p>Connecting knowledge, communities, and impact.</p><Link href="/dashboard">Contributor dashboard →</Link></footer>
+      <footer><div className="brand"><span className="brandmark">น</span><span>NAN</span><em>Living OS</em></div><p>{t("Connecting knowledge, communities, and impact.")}</p><Link href="/dashboard">{t("Contributor dashboard →")}</Link></footer>
     </main>
   );
 }

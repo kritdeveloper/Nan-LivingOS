@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { LanguageSwitch, useLocale } from "./LocaleProvider";
 
 const nav = [
   ["/explorer", "⌕", "Explorer"],
@@ -25,6 +26,7 @@ export function AppShell({
   action?: React.ReactNode;
 }) {
   const path = usePathname();
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(() =>
     typeof window === "undefined" ? "dark" : localStorage.getItem("theme") || "dark"
@@ -82,7 +84,7 @@ export function AppShell({
           <span>NAN</span>
           <em>Living OS</em>
         </Link>
-        <div className="side-label">Discover</div>
+        <div className="side-label">{t("Discover")}</div>
         <nav aria-label="Main Navigation">
           {nav.map(([href, icon, label]) => (
             <Link
@@ -92,24 +94,24 @@ export function AppShell({
               className={path === href ? "active" : ""}
             >
               <span aria-hidden="true">{icon}</span>
-              {label}
+              {t(label)}
             </Link>
           ))}
         </nav>
         <div className="side-spacer" />
         <div className="side-card">
           <span>✦</span>
-          <b>Help memory live on</b>
-          <p style={{ margin: "5px 0 10px" }}>Share a story, image, or piece of local knowledge.</p>
+          <b>{t("Help memory live on")}</b>
+          <p style={{ margin: "5px 0 10px" }}>{t("Share a story, image, or piece of local knowledge.")}</p>
           <Link href="/community" style={{ color: "var(--mint)", fontWeight: "bold" }}>
-            Contribute →
+            {t("Contribute →")}
           </Link>
         </div>
         <div className="profile">
           <span className="avatar">NP</span>
           <div>
             <b>Nicha P.</b>
-            <small>Researcher</small>
+            <small>{t("Researcher")}</small>
           </div>
           <button aria-label="User Options">•••</button>
         </div>
@@ -126,11 +128,12 @@ export function AppShell({
             ☰
           </button>
           <div>
-            <span className="label">{kicker}</span>
-            <h1 style={{ fontFamily: "Georgia, serif", fontSize: "26px", margin: "5px 0 0" }}>{title}</h1>
+            <span className="label">{t(kicker)}</span>
+            <h1 style={{ fontFamily: "Georgia, serif", fontSize: "26px", margin: "5px 0 0" }}>{t(title)}</h1>
           </div>
           <div className="header-action">
             {action}
+            <LanguageSwitch />
             <button
               className="round"
               onClick={toggleTheme}

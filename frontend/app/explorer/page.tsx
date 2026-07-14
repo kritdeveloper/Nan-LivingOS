@@ -5,8 +5,10 @@ import { AppShell } from "../components/AppShell";
 import { api } from "../utils/api";
 import { GraphEntity } from "../types";
 import { LoadingState, EmptyState, ErrorState } from "../components/StatusState";
+import { localizedPlaceholder, useLocale } from "../components/LocaleProvider";
 
 export default function Explorer() {
+  const { locale, t, entityName } = useLocale();
   const [term, setTerm] = useState("");
   const [entities, setEntities] = useState<GraphEntity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,7 @@ export default function Explorer() {
           >
             {themesList.map((t) => (
               <option key={t.value} value={t.value}>
-                {t.name}
+                {t.name === "All themes" ? (locale === "th" ? "ทุกหัวข้อ" : t.name) : t.name === "Culture" ? (locale === "th" ? "วัฒนธรรม" : t.name) : t.name === "Nature" ? (locale === "th" ? "ธรรมชาติ" : t.name) : t.name === "History" ? (locale === "th" ? "ประวัติศาสตร์" : t.name) : t.name}
               </option>
             ))}
           </select>
@@ -94,7 +96,7 @@ export default function Explorer() {
         <input
           value={term}
           onChange={(e) => setTerm(e.target.value)}
-          placeholder="Search the living memory of Nan (murals, salt, etc.)"
+          placeholder={localizedPlaceholder("Search the living memory of Nan (murals, salt, etc.)", locale)}
         />
         <kbd>⌘ K</kbd>
       </div>
@@ -106,7 +108,7 @@ export default function Explorer() {
             className={selectedLabel === lbl.value ? "selected" : ""}
             onClick={() => setSelectedLabel(lbl.value)}
           >
-            {lbl.name}
+            {t(lbl.name)}
           </button>
         ))}
       </div>
@@ -114,7 +116,7 @@ export default function Explorer() {
       <div className="section-title">
         <div>
           <span className="label">ARCHIVE SCAN</span>
-          <h2>Begin somewhere beautiful</h2>
+          <h2>{t("Begin somewhere beautiful")}</h2>
         </div>
         <span>{entities.length} memories</span>
       </div>
@@ -132,9 +134,7 @@ export default function Explorer() {
         <div className="explore-grid">
           {entities.map((entity, i) => {
             const tone = getEntityTone(entity);
-            const title = entity.nameEn
-              ? `${entity.nameEn} (${entity.nameTh})`
-              : entity.nameTh;
+            const title = entityName(entity);
             const subtitle = entity.labels.join(" · ");
             const desc = entity.description || "No description available in the archives.";
 
@@ -152,7 +152,7 @@ export default function Explorer() {
                   </div>
                   <div style={{ marginTop: "12px" }}>
                     <a style={{ fontSize: "11px", color: "var(--mint)", textDecoration: "none", cursor: "pointer" }}>
-                      Explore story →
+                      {t("Explore story →")}
                     </a>
                   </div>
                 </div>

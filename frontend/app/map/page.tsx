@@ -5,8 +5,10 @@ import { AppShell } from "../components/AppShell";
 import { api } from "../utils/api";
 import { GraphEntity } from "../types";
 import { LoadingState, EmptyState, ErrorState } from "../components/StatusState";
+import { useLocale } from "../components/LocaleProvider";
 
 export default function MapPage() {
+  const { t, entityName } = useLocale();
   const [entities, setEntities] = useState<GraphEntity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -87,16 +89,16 @@ export default function MapPage() {
         </div>
         <div className="chips" style={{ margin: "0 0 15px 0" }}>
           <button className={selectedTheme === "All" ? "selected" : ""} onClick={() => setSelectedTheme("All")}>
-            All Places
+            {t("All Places")}
           </button>
           <button className={selectedTheme === "culture" ? "selected" : ""} onClick={() => setSelectedTheme("culture")}>
-            Culture & Art
+            {t("Culture & Art")}
           </button>
           <button className={selectedTheme === "nature" ? "selected" : ""} onClick={() => setSelectedTheme("nature")}>
-            Nature
+            {t("Nature")}
           </button>
           <button className={selectedTheme === "community" ? "selected" : ""} onClick={() => setSelectedTheme("community")}>
-            Community
+            {t("Community")}
           </button>
         </div>
       </div>
@@ -137,7 +139,7 @@ export default function MapPage() {
                 onClick={() => setActiveEntity(entity)}
               >
                 <span>{i + 1}</span>
-                <b>{entity.nameEn || entity.nameTh}</b>
+                <b>{entityName(entity)}</b>
               </button>
             );
           })}
@@ -151,7 +153,7 @@ export default function MapPage() {
                 {activeEntity.labels.join(" · ")}
               </span>
               <h2 style={{ fontFamily: "Georgia, serif", fontSize: "20px", margin: "6px 0 2px" }}>
-                {activeEntity.nameTh}
+                {entityName(activeEntity)}
               </h2>
               {activeEntity.nameEn && (
                 <h4 style={{ color: "var(--mint)", fontSize: "11px", margin: "0 0 10px", fontWeight: "normal" }}>
@@ -166,7 +168,7 @@ export default function MapPage() {
                 <span>Lon: {activeEntity.longitude?.toFixed(3)}</span>
               </div>
               <button className="button" style={{ marginTop: "12px", width: "100%" }}>
-                Explore this place →
+                {t("Explore this place →")}
               </button>
             </aside>
           )}

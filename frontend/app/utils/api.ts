@@ -185,22 +185,27 @@ export const api = {
     const citations = selected.flatMap((entity, index) => sourceGroups[index].items.slice(0, 1).map((source) => ({
       entity_id: entity.id, title: source.title, locator: source.url,
     })));
-    const names = selected.map((entity) => entity.nameTh).join(", ");
+    const english = body.language === "en";
+    const names = selected.map((entity) => english ? entity.nameEn || entity.nameTh : entity.nameTh).join(", ");
     const summary = selected.length
-      ? `จากองค์ความรู้ที่เชื่อมโยงใน Nan Living OS พบเรื่องที่เกี่ยวข้อง ได้แก่ ${names} ลองเริ่มจากเรื่องราวและชุมชน แล้วเลือกประสบการณ์ที่เหมาะกับช่วงเวลาและบริบทของคุณ`
-      : "ยังไม่พบข้อมูลที่ตรงกับคำถามนี้ในคลังความรู้น่าน ลองใช้ชื่อชุมชน สถานที่ หรือหัวข้อวัฒนธรรมที่เฉพาะเจาะจงขึ้น";
+      ? english
+        ? `Nan Living OS found connected knowledge about ${names}. Start with the stories and communities, then choose an experience that fits your time and context.`
+        : `จากองค์ความรู้ที่เชื่อมโยงใน Nan Living OS พบเรื่องที่เกี่ยวข้อง ได้แก่ ${names} ลองเริ่มจากเรื่องราวและชุมชน แล้วเลือกประสบการณ์ที่เหมาะกับช่วงเวลาและบริบทของคุณ`
+      : english
+        ? "No matching knowledge was found yet. Try a more specific community, place, or cultural topic."
+        : "ยังไม่พบข้อมูลที่ตรงกับคำถามนี้ในคลังความรู้น่าน ลองใช้ชื่อชุมชน สถานที่ หรือหัวข้อวัฒนธรรมที่เฉพาะเจาะจงขึ้น";
     return {
       kind: body.kind,
       summary,
       items: selected.map((entity, index) => ({
         entity_id: entity.id,
-        title: entity.nameTh,
+        title: english ? entity.nameEn || entity.nameTh : entity.nameTh,
         score: Math.max(0.5, 1 - index * 0.1),
-        reasons: [entity.description || "ข้อมูลจากคลังความรู้ Nan Living OS"],
+        reasons: [entity.description || (english ? "Knowledge from Nan Living OS" : "ข้อมูลจากคลังความรู้ Nan Living OS")],
         evidence_ids: sourceGroups[index].items.map((source) => source.id),
       })),
       citations,
-      assumptions: ["คำตอบสร้างจากข้อมูลสาธารณะที่มีแหล่งอ้างอิงใน Supabase"],
+      assumptions: [english ? "The answer is grounded in cited public knowledge stored in Supabase." : "คำตอบสร้างจากข้อมูลสาธารณะที่มีแหล่งอ้างอิงใน Supabase"],
       model: "Nan Knowledge Decision Engine",
       grounded: citations.length > 0,
     };
